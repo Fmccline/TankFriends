@@ -11,8 +11,8 @@ public class TankManager
     [HideInInspector] public int m_PlayerNumber;             
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
-    [HideInInspector] public int m_EnemiesKilled { get { return m_Shooting.m_EnemiesDestroyed; } set { m_Shooting.m_EnemiesDestroyed = value; } }
-    [HideInInspector] public int m_Deaths { get { return m_Health.m_Deaths; } set { m_Health.m_Deaths = value; } }
+    [HideInInspector] public int M_Kills { get { return m_Shooting.m_Kills; } set { m_Shooting.m_Kills = value; } }
+    [HideInInspector] public int M_Deaths { get { return m_Health.m_Deaths; } set { m_Health.m_Deaths = value; } }
     [HideInInspector] public int m_Score = 0;
     [HideInInspector] public int m_RoundScore = 0;
 
@@ -44,9 +44,9 @@ public class TankManager
     public void RestartRound()
     {
         Respawn();
-        m_Deaths = 0;
+        M_Deaths = 0;
         m_Score = 0;
-        m_EnemiesKilled = 0;
+        M_Kills = 0;
     }
 
     public void DisableControl()

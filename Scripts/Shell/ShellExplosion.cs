@@ -42,7 +42,7 @@ public class ShellExplosion : MonoBehaviour
 
             if (targetHealth.m_Dead && m_TankShooting != null && targetHealth.gameObject != m_TankShooting.gameObject)
             {
-                m_TankShooting.m_EnemiesDestroyed++;
+                m_TankShooting.m_Kills++;
             }
         }
 

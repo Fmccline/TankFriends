@@ -21,7 +21,7 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
                 return null;
             }
         }
-        winner.m_Score++;
+        winner.m_Score = winner.m_RoundScore + 1;
         return winner;
     }
 

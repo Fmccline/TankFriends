@@ -149,12 +149,13 @@ public class GameManager : MonoBehaviour
 
         if (m_RoundWinner != null)
         {
-            m_RoundWinner.m_Score++;
+            m_RoundWinner.m_RoundScore++;
         }
 
         m_GameWinner = GetGameWinner();
 
         string message = EndMessage();
+        m_TimeText.text = "";
         m_MessageText.text = message;
 
         yield return m_EndWait;
@@ -198,18 +199,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private TankManager GetRoundWinner()
-    {
-        for (int i = 0; i < m_Tanks.Length; i++)
-        {
-            if (m_Tanks[i].m_Instance.activeSelf)
-                return m_Tanks[i];
-        }
-
-        return null;
-    }
-
-
     private TankManager GetGameWinner()
     {
         for (int i = 0; i < m_Tanks.Length; i++)
@@ -234,7 +223,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < m_Tanks.Length; i++)
         {
-            message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Score + " WINS\n";
+            message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_RoundScore + " WINS\n";
         }
 
         return message;
