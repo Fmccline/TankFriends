@@ -85,6 +85,11 @@ public class GameManager : MonoBehaviour
         m_MessageText.text = "Round " + m_RoundNumber;
 
         m_Time = 0f;
+
+        float scale = 50f;
+        var scorePosition = m_ScoreText.GetComponent<RectTransform>().position;
+        m_ScoreText.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_Tanks.Length * scale);
+        m_ScoreText.GetComponent<RectTransform>().position = new Vector3(scorePosition.x + 100f, scorePosition.y - m_Tanks.Length * scale/2f, scorePosition.z);
         m_ScoreText.text = GetScoreText();
         m_TimeText.text = GetTimeText();
 
