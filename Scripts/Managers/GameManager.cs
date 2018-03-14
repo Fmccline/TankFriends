@@ -89,53 +89,19 @@ public class GameManager : MonoBehaviour
         m_TimeText.text = GetTimeText();
 
         yield return m_StartWait;
+        m_GameMode.StartRound(m_Tanks);
     }
 
     private IEnumerator RoundPlaying()
     {
-        EnableTanksInvincible();
-
         m_MessageText.text = string.Empty;
-        yield return m_InvincibleDelay;
-
-        DisableTanksInvincible();
+        
         m_Time = 0f;
         while (!m_GameMode.IsEndOfRound(m_Tanks) && m_Time < m_MaxRoundTime)
         {
             m_ScoreText.text = GetScoreText();
             m_TimeText.text = GetTimeText();
             yield return null;
-        }
-    }
-
-    private string GetTimeText()
-    {
-        return "Time: " + ((int)m_MaxRoundTime - (int)m_Time).ToString();
-    }
-
-    private string GetScoreText()
-    {
-        string scoreText = "Score\n";
-        foreach (var tank in m_Tanks)
-        {
-            scoreText += "Player " + tank.m_PlayerNumber.ToString() + ": " + tank.m_Score.ToString() + "\n";
-        }
-        return scoreText;
-    }
-
-    private void EnableTanksInvincible()
-    {
-        foreach (var tank in m_Tanks)
-        {
-            tank.EnableInvincible();
-        }
-    }
-
-    private void DisableTanksInvincible()
-    {
-        foreach (var tank in m_Tanks)
-        {
-            tank.DisableInvincible();
         }
     }
 
@@ -165,7 +131,7 @@ public class GameManager : MonoBehaviour
     {
         m_NumTanks = (m_NumTanks > 8) ? 8 : m_NumTanks;
         m_Tanks = new TankManager[m_NumTanks];
-        Color[] colors = { Color.blue, Color.red, Color.green, Color.yellow, Color.magenta, Color.cyan, Color.white, Color.black };
+        Color[] colors = { Color.blue, Color.red, Color.green, Color.magenta, Color.cyan, Color.black, new Color(0.5f, 0.5f, 0.5f), new Color(155f/255f, 76f/255f, 0f) };
         for (int i = 0; i < m_Tanks.Length; ++i)
         {
             float rotation = i * Mathf.PI * 2 / m_NumTanks;
@@ -185,7 +151,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
     private void SetCameraTargets()
     {
         Transform[] targets = new Transform[m_Tanks.Length];
@@ -198,6 +163,20 @@ public class GameManager : MonoBehaviour
         m_CameraControl.m_Targets = targets;
     }
 
+    private string GetTimeText()
+    {
+        return "Time: " + ((int)m_MaxRoundTime - (int)m_Time).ToString();
+    }
+
+    private string GetScoreText()
+    {
+        string scoreText = "Score\n";
+        foreach (var tank in m_Tanks)
+        {
+            scoreText += "Player " + tank.m_PlayerNumber.ToString() + ": " + tank.m_Score.ToString() + "\n";
+        }
+        return scoreText;
+    }
 
     private TankManager GetGameWinner()
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 [Serializable]
@@ -20,6 +21,8 @@ public class TankManager
     private TankShooting m_Shooting;
     private GameObject m_CanvasGameObject;
     private TankHealth m_Health;
+    private Color m_InvincibleColor = new Color(255f/255f, 255f/255f, 102f/255f);
+    private Color m_CurrentColor;
 
     public void Setup()
     {
@@ -39,14 +42,7 @@ public class TankManager
         {
             renderers[i].material.color = m_PlayerColor;
         }
-    }
-
-    public void RestartRound()
-    {
-        Respawn();
-        M_Deaths = 0;
-        m_Score = 0;
-        M_Kills = 0;
+        m_CurrentColor = m_PlayerColor;
     }
 
     public void DisableControl()
@@ -54,17 +50,16 @@ public class TankManager
         m_Health.m_CanTakeDamage = false;
         m_Movement.enabled = false;
         m_Shooting.enabled = false;
-        SetDisabledColors();
         m_CanvasGameObject.SetActive(false);
     }
 
-    private void SetDisabledColors()
+    private void SetColor(Color c)
     {
+        m_CurrentColor = c;
         MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer>();
         for (int i = 0; i < renderers.Length; i++)
         {
-            Color invincibleColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-            renderers[i].material.color = invincibleColor;
+            renderers[i].material.color = c;
         }
     }
 
@@ -74,17 +69,13 @@ public class TankManager
         m_Movement.enabled = true;
         m_Shooting.enabled = false;
         m_CanvasGameObject.SetActive(true);
-    }
+    } 
 
     public void DisableInvincible()
     {
         m_Health.m_CanTakeDamage = true;
         m_Shooting.enabled = true;
-        MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer>();
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            renderers[i].material.color = m_PlayerColor;
-        }
+        SetColor(m_PlayerColor);
     }
 
     public void Reset()
@@ -104,7 +95,19 @@ public class TankManager
         m_Instance.SetActive(false);
         m_Instance.SetActive(true);
 
+        SetColor(m_PlayerColor);
         DisableControl();
         m_CanvasGameObject.SetActive(true);
+    }
+
+    public void CycleInvincibleColor()
+    {
+        var nextColor = (m_CurrentColor == m_PlayerColor) ? m_InvincibleColor : m_PlayerColor;
+        SetColor(nextColor);
+    }
+
+    public bool IsDead()
+    {
+        return m_Health.m_Dead;
     }
 }

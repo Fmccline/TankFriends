@@ -7,6 +7,16 @@ using UnityEngine.UI;
 
 public class LastManStandingMode : MonoBehaviour, IGameMode
 {
+    public float m_InvincibleDuration = 2.5f;
+
+    public void StartRound(TankManager[] tanks)
+    {
+        foreach (var tank in tanks)
+        {
+            StartCoroutine(Respawn(tank));
+        }
+    }
+
     public TankManager GetRoundWinner(TankManager[] tanks)
     {
         TankManager winner = null;
@@ -16,21 +26,20 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
             {
                 winner = tank;
             }
-            else if (winner != null)
+            else if (tank.m_Instance.activeSelf && winner != null)
             {
                 return null;
             }
         }
+        if (winner == null)
+            return null;
+
         winner.m_Score = winner.m_RoundScore + 1;
         return winner;
     }
 
+    // returns true if <= 1 tanks left
     public bool IsEndOfRound(TankManager[] tanks)
-    {
-        return OneTankLeft(tanks);
-    }
-
-    private bool OneTankLeft(TankManager[] tanks)
     {
         int numTanksLeft = 0;
 
@@ -41,5 +50,18 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
         }
 
         return numTanksLeft <= 1;
+    }
+
+    private IEnumerator Respawn(TankManager tank)
+    {
+        tank.Respawn();
+        tank.EnableInvincible();
+        float frequency = 0.1f;
+        for (float t = 0f; t < m_InvincibleDuration; t += frequency)
+        {
+            yield return new WaitForSeconds(frequency);
+            tank.CycleInvincibleColor();
+        }
+        tank.DisableInvincible();
     }
 }

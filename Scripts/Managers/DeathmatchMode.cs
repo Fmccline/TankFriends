@@ -5,9 +5,17 @@ using UnityEngine;
 
 public class DeathmatchMode : MonoBehaviour, IGameMode {
 
-    public float m_SpawnDelay = 0.5f; // Default 0.5 second wait before tank can move again after respawning
+    public float m_InvincibleDuration = 2.5f; // Default seconds to wait before tank can attack and take damage again
     private int[] m_TankKills;
     private int[] m_TankDeaths;
+
+    public void StartRound(TankManager[] tanks)
+    {
+        foreach (var tank in tanks)
+        {
+            StartCoroutine(Respawn(tank));
+        }
+    }
 
     public TankManager GetRoundWinner(TankManager[] tanks)
     {
@@ -87,9 +95,13 @@ public class DeathmatchMode : MonoBehaviour, IGameMode {
     private IEnumerator Respawn(TankManager tank)
     {
         tank.Respawn();
-        yield return new WaitForSeconds(m_SpawnDelay);
         tank.EnableInvincible();
-        yield return new WaitForSeconds(m_SpawnDelay);
+        float frequency = 0.1f;
+        for (float t = 0f; t < m_InvincibleDuration; t += frequency)
+        {
+            yield return new WaitForSeconds(frequency);
+            tank.CycleInvincibleColor();
+        }
         tank.DisableInvincible();
     }
 }
