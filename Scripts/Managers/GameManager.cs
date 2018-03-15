@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     public GameObject m_TankPrefab;
     public float m_MaxRoundTime = 300f;
     public int m_NumTanks;
+    public int m_Humans;
+    public int m_DumbAI;
     public float m_SpawnRadius;
     public IGameMode m_GameMode;
 
@@ -54,6 +56,12 @@ public class GameManager : MonoBehaviour
         SpawnAllTanks();
         SetCameraTargets();
 
+
+        float scale = 50f;
+        var scorePosition = m_ScoreText.GetComponent<RectTransform>().position;
+        m_ScoreText.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_Tanks.Length * scale);
+        m_ScoreText.GetComponent<RectTransform>().position = new Vector3(scorePosition.x + 100f, scorePosition.y - m_Tanks.Length * scale / 2f, scorePosition.z);
+
         StartCoroutine(GameLoop());
     }
 
@@ -86,10 +94,6 @@ public class GameManager : MonoBehaviour
 
         m_Time = 0f;
 
-        float scale = 50f;
-        var scorePosition = m_ScoreText.GetComponent<RectTransform>().position;
-        m_ScoreText.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_Tanks.Length * scale);
-        m_ScoreText.GetComponent<RectTransform>().position = new Vector3(scorePosition.x + 100f, scorePosition.y - m_Tanks.Length * scale/2f, scorePosition.z);
         m_ScoreText.text = GetScoreText();
         m_TimeText.text = GetTimeText();
 
@@ -150,7 +154,8 @@ public class GameManager : MonoBehaviour
                 m_SpawnRotation = spawnRotation,
                 m_PlayerColor = colors[i],
                 m_Instance = Instantiate(m_TankPrefab, spawnPosition, spawnRotation) as GameObject,
-                m_PlayerNumber = i + 1
+                m_PlayerNumber = i + 1,
+                m_TankUserType = (m_Humans-- > 0) ? 0 : 1,
             };
             m_Tanks[i].Setup();
         }

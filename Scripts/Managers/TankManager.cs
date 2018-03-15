@@ -8,7 +8,8 @@ public class TankManager
     public Color m_PlayerColor;
     public Vector3 m_SpawnPosition;
     public Quaternion m_SpawnRotation;
-    //public Transform m_SpawnPoint;         
+    //public Transform m_SpawnPoint; 
+    [HideInInspector] public int m_TankUserType = 0;
     [HideInInspector] public int m_PlayerNumber;             
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
@@ -29,6 +30,20 @@ public class TankManager
         m_Movement = m_Instance.GetComponent<TankMovement>();
         m_Shooting = m_Instance.GetComponent<TankShooting>();
         m_Health = m_Instance.GetComponent<TankHealth>();
+
+        ITankInput tankInput;
+        if (m_TankUserType == 0)
+        {
+            tankInput = new HumanTankInput();
+        }
+        else
+        {
+            tankInput = new DumbTankInput();
+        }
+
+        m_Movement.m_TankInput = tankInput;
+        m_Shooting.m_TankInput = tankInput;
+
         m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas>().gameObject;
 
         m_Movement.m_PlayerNumber = m_PlayerNumber;

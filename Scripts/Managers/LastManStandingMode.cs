@@ -13,6 +13,7 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
     {
         foreach (var tank in tanks)
         {
+            tank.m_Score = tank.m_RoundScore;
             StartCoroutine(Respawn(tank));
         }
     }
@@ -31,10 +32,6 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
                 return null;
             }
         }
-        if (winner == null)
-            return null;
-
-        winner.m_Score = winner.m_RoundScore + 1;
         return winner;
     }
 

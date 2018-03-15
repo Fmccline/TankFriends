@@ -2,14 +2,14 @@
 
 public class TankMovement : MonoBehaviour
 {
-    public int m_PlayerNumber = 1;         
-    public float m_Speed = 12f;            
-    public float m_TurnSpeed = 180f;       
-    public AudioSource m_MovementAudio;    
-    public AudioClip m_EngineIdling;       
-    public AudioClip m_EngineDriving;      
+    public int m_PlayerNumber = 1;
+    public float m_Speed = 12f;
+    public float m_TurnSpeed = 180f;
+    public AudioSource m_MovementAudio;
+    public AudioClip m_EngineIdling;
+    public AudioClip m_EngineDriving;
     public float m_PitchRange = 0.2f;
-
+    public ITankInput m_TankInput = new HumanTankInput();
     private string m_MovementAxisName;     
     private string m_TurnAxisName;         
     private Rigidbody m_Rigidbody;         
@@ -50,14 +50,14 @@ public class TankMovement : MonoBehaviour
     private void Update()
     {
         // Store the player's input and make sure the audio for the engine is playing.
-        m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
-        m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
+        m_MovementInputValue = m_TankInput.GetMovementInput(m_MovementAxisName);
+        m_TurnInputValue = m_TankInput.GetTurnInput(m_TurnAxisName);
 
         EngineAudio();
     }
 
 
-    private void EngineAudio()
+    public void EngineAudio()
     {
         // Play the correct audio clip based on whether or not the tank is moving and what audio is currently playing.
         if (Mathf.Abs(m_MovementInputValue) < 0.1f && Mathf.Abs(m_TurnInputValue) < 0.1f)

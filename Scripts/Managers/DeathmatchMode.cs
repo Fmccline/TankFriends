@@ -13,6 +13,7 @@ public class DeathmatchMode : MonoBehaviour, IGameMode {
     {
         foreach (var tank in tanks)
         {
+            tank.m_Score = 0;
             StartCoroutine(Respawn(tank));
         }
     }
