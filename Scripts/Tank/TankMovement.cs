@@ -5,13 +5,16 @@ public class TankMovement : MonoBehaviour
     public int m_PlayerNumber = 1;
     public float m_Speed = 12f;
     public float m_TurnSpeed = 180f;
+    //public float m_MaxSpeed = 15f;
+    //public float m_Acceleration = 50f;
+    //public float m_CurrentSpeed = 0f;
     public AudioSource m_MovementAudio;
     public AudioClip m_EngineIdling;
     public AudioClip m_EngineDriving;
     public float m_PitchRange = 0.2f;
     public ITankInput m_TankInput = new HumanTankInput();
-    private string m_MovementAxisName;     
-    private string m_TurnAxisName;         
+    public string m_MovementAxisName;     
+    public string m_TurnAxisName;         
     private Rigidbody m_Rigidbody;         
     private float m_MovementInputValue;    
     private float m_TurnInputValue;        
@@ -50,8 +53,8 @@ public class TankMovement : MonoBehaviour
     private void Update()
     {
         // Store the player's input and make sure the audio for the engine is playing.
-        m_MovementInputValue = m_TankInput.GetMovementInput(m_MovementAxisName);
-        m_TurnInputValue = m_TankInput.GetTurnInput(m_TurnAxisName);
+        m_MovementInputValue = m_TankInput.GetMovementInput(this);
+        m_TurnInputValue = m_TankInput.GetTurnInput(this);
 
         EngineAudio();
     }
@@ -91,11 +94,23 @@ public class TankMovement : MonoBehaviour
 
     private void Move()
     {
-        // Adjust the position of the tank based on the player's input.
+        //m_CurrentSpeed = Mathf.Abs(m_Rigidbody.velocity.magnitude);
+        //if (m_MovementInputValue == 0)
+        //    return;
+        //// Adjust the position of the tank based on the player's input.
+        //float directionFactor = (m_MovementInputValue < 0) ? 0.5f : 1.0f;
+        //if (m_CurrentSpeed >= m_MaxSpeed)
+        //{
+        //    m_CurrentSpeed = m_MaxSpeed;
+        //    m_Rigidbody.velocity = m_Rigidbody.velocity.normalized * m_CurrentSpeed;
+        //}
+
+        //Vector3 movementForce = transform.forward * m_MovementInputValue * directionFactor * m_Acceleration * Time.deltaTime;
+        //m_Rigidbody.AddForce(movementForce);
+
         float directionFactor = (m_MovementInputValue < 0) ? 0.5f : 1.0f;
 
         Vector3 movement = transform.forward * m_MovementInputValue * directionFactor * m_Speed * Time.deltaTime;
-
         m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
     }
 

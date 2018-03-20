@@ -16,7 +16,7 @@ public class TankShooting : MonoBehaviour
     public int m_Kills = 0;
     public ITankInput m_TankInput = new HumanTankInput();
 
-    private string m_FireButton;                // The input axis that is used for launching shells.
+    public string m_FireButton;                // The input axis that is used for launching shells.
     private float m_CurrentLaunchForce;         // The force that will be given to the shell when the fire button is released.
     private float m_ChargeSpeed;                // How fast the launch force increases, based on the max charge time.
     private bool m_Fired;                       // Whether or not the shell has been launched with this button press.
@@ -52,7 +52,7 @@ public class TankShooting : MonoBehaviour
             m_CurrentLaunchForce = m_MaxLaunchForce;
             Fire();
         }
-       else if (m_TankInput.IsChargingShot(m_FireButton) && !m_IsCharging)
+       else if (m_TankInput.IsChargingShot(this) && !m_IsCharging)
         {
             // ... reset the fired flag and reset the launch force.
             m_CurrentLaunchForce = m_MinLaunchForce;
@@ -62,13 +62,13 @@ public class TankShooting : MonoBehaviour
             m_ShootingAudio.Play();
             m_IsCharging = true;
         }
-        else if (m_TankInput.IsChargingShot(m_FireButton) && m_IsCharging)
+        else if (m_TankInput.IsChargingShot(this) && m_IsCharging)
         {
             m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
 
             m_AimSlider.value = m_CurrentLaunchForce;
         }
-        else if (m_TankInput.IsFiringShot(m_FireButton))
+        else if (m_TankInput.IsFiringShot(this))
         {
             m_IsCharging = false;
             Fire();

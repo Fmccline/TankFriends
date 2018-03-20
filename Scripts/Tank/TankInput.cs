@@ -4,10 +4,10 @@ using UnityEngine;
 
 public interface ITankInput
 {
-    float GetMovementInput(string axisName);
-    float GetTurnInput(string axisName);
-    bool IsChargingShot(string button);
-    bool IsFiringShot(string button);
+    float GetMovementInput(TankMovement tankMovement);
+    float GetTurnInput(TankMovement tankMovement);
+    bool IsChargingShot(TankShooting tankShooting);
+    bool IsFiringShot(TankShooting tankShooting);
     // is 
     // is charging
     // is firing

@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class HumanTankInput : ITankInput
 {
-    public float GetMovementInput(string axisName)
+    public float GetMovementInput(TankMovement tankMovement)
     {
-        return Input.GetAxis(axisName);
+        return Input.GetAxis(tankMovement.m_MovementAxisName);
     }
 
-    public float GetTurnInput(string axisName)
+    public float GetTurnInput(TankMovement tankMovement)
     {
-        return Input.GetAxis(axisName);
+        return Input.GetAxis(tankMovement.m_TurnAxisName);
     }
 
     public bool IsChargingShot(string button)
@@ -20,8 +20,13 @@ public class HumanTankInput : ITankInput
         return Input.GetButtonDown(button) || Input.GetButton(button);
     }
 
-    public bool IsFiringShot(string button)
+    public bool IsChargingShot(TankShooting tankShooting)
     {
-        return Input.GetButtonUp(button);
+        return Input.GetButtonDown(tankShooting.m_FireButton) || Input.GetButton(tankShooting.m_FireButton);
+    }
+
+    public bool IsFiringShot(TankShooting tankShooting)
+    {
+        return Input.GetButtonUp(tankShooting.m_FireButton);
     }
 }
