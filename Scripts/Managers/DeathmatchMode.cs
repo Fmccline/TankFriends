@@ -16,6 +16,11 @@ public class DeathmatchMode : MonoBehaviour, IGameMode {
             tank.m_Score = 0;
             StartCoroutine(Respawn(tank));
         }
+        for (int i = 0; i < tanks.Length; ++i)
+        {
+            m_TankDeaths[i] = 0;
+            m_TankKills[i] = 0;
+        }
     }
 
     public TankManager GetRoundWinner(TankManager[] tanks)
@@ -85,7 +90,7 @@ public class DeathmatchMode : MonoBehaviour, IGameMode {
                 tank.M_Kills = 0;
                 tank.M_Deaths = 0;
             }
-            tank.m_Score = tank.M_Kills - tank.M_Deaths;
+            //tank.m_Score = tank.M_Kills - tank.M_Deaths;
             if (tank.m_Instance.activeSelf == false)
             {
                 StartCoroutine(Respawn(tank));

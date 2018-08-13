@@ -13,11 +13,29 @@ public class TankHealth : MonoBehaviour
     [HideInInspector] public bool m_Dead;
     [HideInInspector] public int m_Deaths = 0;
 
-
     private AudioSource m_ExplosionAudio;          
     private ParticleSystem m_ExplosionParticles;   
     private float m_CurrentHealth;  
 
+    public bool IsDead()
+    {
+        return m_Dead;
+    }
+
+    public bool CanTakeDamage()
+    {
+        return m_CanTakeDamage;
+    }
+
+    public int GetDeaths()
+    {
+        return m_Deaths;
+    }
+
+    public float GetCurrentHealth()
+    {
+        return m_CurrentHealth;
+    }
 
     private void Awake()
     {

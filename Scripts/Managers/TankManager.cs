@@ -9,7 +9,6 @@ public class TankManager
     public Vector3 m_SpawnPosition;
     public Quaternion m_SpawnRotation;
     //public Transform m_SpawnPoint; 
-    [HideInInspector] public int m_TankUserType = 0;
     [HideInInspector] public int m_PlayerNumber;             
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
@@ -17,7 +16,11 @@ public class TankManager
     [HideInInspector] public int M_Deaths { get { return m_Health.m_Deaths; } set { m_Health.m_Deaths = value; } }
     [HideInInspector] public int m_Score = 0;
     [HideInInspector] public int m_RoundScore = 0;
+    public enum TankType { Human = 0, DumbAI = 1, SmartAI = 2 };
+    [HideInInspector] public TankType m_TankUserType = TankType.Human;
 
+
+    private ITankInput m_TankInput;
     private TankMovement m_Movement;       
     private TankShooting m_Shooting;
     private GameObject m_CanvasGameObject;
@@ -31,18 +34,22 @@ public class TankManager
         m_Shooting = m_Instance.GetComponent<TankShooting>();
         m_Health = m_Instance.GetComponent<TankHealth>();
 
-        ITankInput tankInput;
-        if (m_TankUserType == 0)
+        if (m_TankUserType == TankType.Human)
         {
-            tankInput = new HumanTankInput();
+            m_TankInput = new HumanTankInput();
         }
-        else
+        else if (m_TankUserType == TankType.DumbAI)
         {
-            tankInput = new DumbTankInput();
+            m_TankInput = new DumbTankInput();
+        }
+        else if (m_TankUserType == TankType.SmartAI)
+        {
+            var tankInput = m_Instance.AddComponent<SmartTankInput>() as SmartTankInput;
+            m_TankInput = tankInput;
         }
 
-        m_Movement.m_TankInput = tankInput;
-        m_Shooting.m_TankInput = tankInput;
+        m_Movement.m_TankInput = m_TankInput;
+        m_Shooting.m_TankInput = m_TankInput;
 
         m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas>().gameObject;
 

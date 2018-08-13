@@ -19,8 +19,24 @@ public class TankShooting : MonoBehaviour
     public string m_FireButton;                // The input axis that is used for launching shells.
     private float m_CurrentLaunchForce;         // The force that will be given to the shell when the fire button is released.
     private float m_ChargeSpeed;                // How fast the launch force increases, based on the max charge time.
-    private bool m_Fired;                       // Whether or not the shell has been launched with this button press.
     private bool m_IsCharging;
+    private float m_MaxCooldownTime = 0.1f;
+    private float m_CurrentCooldownTime = 0f;
+
+    public int GetKills()
+    {
+        return m_Kills;
+    }
+
+    public float GetCurrentLaunchForce()
+    {
+        return m_CurrentLaunchForce;
+    }
+
+    public bool IsCharging()
+    {
+        return m_IsCharging;
+    }
 
     private void OnEnable()
     {
@@ -45,6 +61,15 @@ public class TankShooting : MonoBehaviour
         // The slider should have a default value of the minimum launch force.
         m_AimSlider.value = m_MinLaunchForce;
 
+        // If on cooldown, add change in time and return
+        if (m_CurrentCooldownTime > 0f)
+        {
+            m_CurrentCooldownTime -= Time.deltaTime;
+            return;
+        }
+        // If not on cooldown, make sure cooldown is 0
+        m_CurrentCooldownTime = 0f;
+
         // If the max force has been exceeded and the shell hasn't yet been launched...
         if (m_CurrentLaunchForce >= m_MaxLaunchForce)
         {
@@ -62,7 +87,7 @@ public class TankShooting : MonoBehaviour
             m_ShootingAudio.Play();
             m_IsCharging = true;
         }
-        else if (m_TankInput.IsChargingShot(this) && m_IsCharging)
+        else if (m_TankInput.IsChargingShot(this) && !m_TankInput.IsFiringShot(this))
         {
             m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
 
@@ -78,9 +103,6 @@ public class TankShooting : MonoBehaviour
 
     private void Fire()
     {
-        // Set the fired flag so only Fire is only called once.
-        m_Fired = true;
-
         // Create an instance of the shell and store a reference to it's rigidbody.
         Rigidbody shellInstance =
             Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
@@ -97,5 +119,8 @@ public class TankShooting : MonoBehaviour
 
         // Reset the launch force.  This is a precaution in case of missing button events.
         m_CurrentLaunchForce = m_MinLaunchForce;
+
+        // Set cooldown
+        m_CurrentCooldownTime = m_MaxCooldownTime;
     }
 }

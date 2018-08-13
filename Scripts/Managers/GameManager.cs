@@ -6,27 +6,29 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
-    public int m_GameModeInt = 0;
     public int m_NumRoundsToWin = 5;        
     public float m_StartDelay = 3f;         
-    public float m_EndDelay = 3f; 
+    public float m_EndDelay = 3f;
+    //public float m_InvincibilityDelay = 2.0f;
     public CameraControl m_CameraControl;   
     public Text m_MessageText;
     public Text m_TimeText;
     public Text m_ScoreText;
     public GameObject m_TankPrefab;
     public float m_MaxRoundTime = 300f;
-    public int m_NumTanks;
+    [HideInInspector] public int m_NumTanks;
     public int m_Humans;
     public int m_DumbAI;
+    public int m_SmartAI;
     public float m_SpawnRadius;
     public IGameMode m_GameMode;
+    public enum GameMode { DeathMatch = 0, LastManStanding = 1 };
+    public GameMode m_GameModeType = GameMode.DeathMatch;
 
     private int m_RoundNumber;              
     private WaitForSeconds m_StartWait;     
     private WaitForSeconds m_EndWait;
     //private WaitForSeconds m_SpawnDelay;
-    private WaitForSeconds m_InvincibleDelay;
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
     private TankManager[] m_Tanks;
@@ -39,13 +41,19 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        StartGame();
+    }
+
+    public void StartGame()
+    {
+        m_NumTanks = (m_Humans + m_DumbAI + m_SmartAI > 8) ? 8 : m_Humans + m_DumbAI + m_SmartAI;
+
         m_StartWait = new WaitForSeconds(m_StartDelay);
         m_EndWait = new WaitForSeconds(m_EndDelay);
-        m_InvincibleDelay = new WaitForSeconds(2f);
 
-        switch (m_GameModeInt)
+        switch (m_GameModeType)
         {
-            case 1:
+            case GameMode.DeathMatch:
                 m_GameMode = GetComponentInChildren<DeathmatchMode>();
                 break;
             default:
@@ -56,7 +64,6 @@ public class GameManager : MonoBehaviour
         SpawnAllTanks();
         SetCameraTargets();
 
-
         float scale = 50f;
         var scorePosition = m_ScoreText.GetComponent<RectTransform>().position;
         m_ScoreText.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_Tanks.Length * scale);
@@ -64,6 +71,7 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(GameLoop());
     }
+    
 
     public IEnumerator GameLoop()
     {
@@ -155,8 +163,19 @@ public class GameManager : MonoBehaviour
                 m_PlayerColor = colors[i],
                 m_Instance = Instantiate(m_TankPrefab, spawnPosition, spawnRotation) as GameObject,
                 m_PlayerNumber = i + 1,
-                m_TankUserType = (m_Humans-- > 0) ? 0 : 1,
             };
+            if (m_SmartAI-- > 0)
+            {
+                m_Tanks[i].m_TankUserType = TankManager.TankType.SmartAI;
+            }
+            else if (m_DumbAI-- > 0)
+            {
+                m_Tanks[i].m_TankUserType = TankManager.TankType.DumbAI;
+            }
+            else
+            {
+                m_Tanks[i].m_TankUserType = TankManager.TankType.Human;
+            }
             m_Tanks[i].Setup();
         }
     }

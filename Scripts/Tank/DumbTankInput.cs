@@ -5,16 +5,14 @@ using UnityEngine;
 
 public class DumbTankInput : ITankInput
 {
-    private float angularSpeed = 0f;
-
     public float GetMovementInput(TankMovement tankMovement)
     {
-        return 0.8f;
+        return 1.0f;
     }
 
     private GameObject GetClosestTank(GameObject[] tanks, GameObject myTank)
     {
-        var closestTank = tanks[0];
+        var closestTank = (tanks[0] != myTank) ? tanks[0] : tanks[1];
         var distanceToClosestTank = Vector3.Distance(closestTank.transform.position, myTank.transform.position);
         for (int i = 1; i < tanks.Length; ++i)
         {
@@ -39,7 +37,6 @@ public class DumbTankInput : ITankInput
 
         Vector2 directionToOpponent = new Vector2(targetPostion.x - myPosition.x, targetPostion.y - myPosition.y).normalized;
         var angleBetweenTanks = Vector2.SignedAngle(myDirection, directionToOpponent);
-        Debug.Log("Angle between tanks: " + angleBetweenTanks.ToString());
         return angleBetweenTanks;
     }
 
