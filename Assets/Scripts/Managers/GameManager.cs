@@ -16,15 +16,14 @@ public class GameManager : MonoBehaviour
     public Text m_ScoreText;
     public GameObject m_TankPrefab;
     public float m_MaxRoundTime = 300f;
-    [HideInInspector] public int m_NumTanks;
     public int m_Humans;
     public int m_DumbAI;
-    public int m_SmartAI;
     public float m_SpawnRadius;
     public IGameMode m_GameMode;
     public enum GameMode { DeathMatch = 0, LastManStanding = 1 };
     public GameMode m_GameModeType = GameMode.DeathMatch;
 
+    [HideInInspector] public int m_NumTanks;
     private int m_RoundNumber;              
     private WaitForSeconds m_StartWait;     
     private WaitForSeconds m_EndWait;
@@ -46,7 +45,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
-        m_NumTanks = (m_Humans + m_DumbAI + m_SmartAI > 8) ? 8 : m_Humans + m_DumbAI + m_SmartAI;
+        m_NumTanks = (m_Humans + m_DumbAI > 8) ? 8 : m_Humans + m_DumbAI;
 
         m_StartWait = new WaitForSeconds(m_StartDelay);
         m_EndWait = new WaitForSeconds(m_EndDelay);
@@ -164,19 +163,20 @@ public class GameManager : MonoBehaviour
                 m_Instance = Instantiate(m_TankPrefab, spawnPosition, spawnRotation) as GameObject,
                 m_PlayerNumber = i + 1,
             };
-            if (m_SmartAI-- > 0)
-            {
-                m_Tanks[i].m_TankUserType = TankManager.TankType.SmartAI;
-            }
-            else if (m_DumbAI-- > 0)
-            {
-                m_Tanks[i].m_TankUserType = TankManager.TankType.DumbAI;
-            }
-            else
-            {
-                m_Tanks[i].m_TankUserType = TankManager.TankType.Human;
-            }
-            m_Tanks[i].Setup();
+            TankInput.Type tankType = GetTankType();
+            m_Tanks[i].Setup(tankType);
+        }
+    }
+
+    private TankInput.Type GetTankType()
+    {
+        if (m_DumbAI-- > 0)
+        {
+            return TankInput.Type.DumbAI;
+        }
+        else
+        {
+            return TankInput.Type.Human;
         }
     }
 

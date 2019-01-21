@@ -16,9 +16,6 @@ public class TankManager
     [HideInInspector] public int M_Deaths { get { return m_Health.m_Deaths; } set { m_Health.m_Deaths = value; } }
     [HideInInspector] public int m_Score = 0;
     [HideInInspector] public int m_RoundScore = 0;
-    public enum TankType { Human = 0, DumbAI = 1, SmartAI = 2 };
-    [HideInInspector] public TankType m_TankUserType = TankType.Human;
-
 
     private ITankInput m_TankInput;
     private TankMovement m_Movement;       
@@ -28,26 +25,13 @@ public class TankManager
     private Color m_InvincibleColor = new Color(255f/255f, 255f/255f, 102f/255f);
     private Color m_CurrentColor;
 
-    public void Setup()
+    public void Setup(TankInput.Type inputType)
     {
         m_Movement = m_Instance.GetComponent<TankMovement>();
         m_Shooting = m_Instance.GetComponent<TankShooting>();
         m_Health = m_Instance.GetComponent<TankHealth>();
 
-        if (m_TankUserType == TankType.Human)
-        {
-            m_TankInput = new HumanTankInput();
-        }
-        else if (m_TankUserType == TankType.DumbAI)
-        {
-            m_TankInput = new DumbTankInput();
-        }
-        else if (m_TankUserType == TankType.SmartAI)
-        {
-            var tankInput = m_Instance.AddComponent<SmartTankInput>() as SmartTankInput;
-            m_TankInput = tankInput;
-        }
-
+        m_TankInput = TankInputFactory.MakeTankWithInput(inputType);
         m_Movement.m_TankInput = m_TankInput;
         m_Shooting.m_TankInput = m_TankInput;
 

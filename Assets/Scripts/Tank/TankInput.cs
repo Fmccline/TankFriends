@@ -8,7 +8,4 @@ public interface ITankInput
     float GetTurnInput(TankMovement tankMovement);
     bool IsChargingShot(TankShooting tankShooting);
     bool IsFiringShot(TankShooting tankShooting);
-    // is 
-    // is charging
-    // is firing
 }
