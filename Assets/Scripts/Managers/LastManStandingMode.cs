@@ -2,8 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+
 
 public class LastManStandingMode : MonoBehaviour, IGameMode
 {
@@ -13,9 +12,20 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
     {
         foreach (var tank in tanks)
         {
-            tank.m_Score = tank.m_RoundScore;
             StartCoroutine(Respawn(tank));
         }
+    }
+
+    public List<float> GetRoundScores(TankManager[] tanks)
+    {
+        List<float> scores = new List<float>();
+        foreach (var tank in tanks)
+        {
+            Score tankScore = tank.m_TankScore;
+            int score = tankScore.GetWins();
+            scores.Add(score);
+        }
+        return scores;
     }
 
     public TankManager GetRoundWinner(TankManager[] tanks)
@@ -23,19 +33,21 @@ public class LastManStandingMode : MonoBehaviour, IGameMode
         TankManager winner = null;
         foreach (var tank in tanks)
         {
-            if (tank.m_Instance.activeSelf && winner == null)
+            if (tank.m_Instance.activeSelf)
             {
-                winner = tank;
-            }
-            else if (tank.m_Instance.activeSelf && winner != null)
-            {
-                return null;
+                if (winner != null)
+                {
+                    return null;
+                }
+                else
+                {
+                    winner = tank;
+                }
             }
         }
         return winner;
     }
 
-    // returns true if <= 1 tanks left
     public bool IsEndOfRound(TankManager[] tanks)
     {
         int numTanksLeft = 0;

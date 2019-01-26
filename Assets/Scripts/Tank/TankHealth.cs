@@ -10,26 +10,21 @@ public class TankHealth : MonoBehaviour
     public Color m_ZeroHealthColor = Color.red;    
     public GameObject m_ExplosionPrefab;
     [HideInInspector] public bool m_CanTakeDamage;
-    [HideInInspector] public bool m_Dead;
-    [HideInInspector] public int m_Deaths = 0;
+    public Score m_Score;
 
+    private bool isDead;
     private AudioSource m_ExplosionAudio;          
     private ParticleSystem m_ExplosionParticles;   
     private float m_CurrentHealth;  
 
     public bool IsDead()
     {
-        return m_Dead;
+        return isDead;
     }
 
     public bool CanTakeDamage()
     {
         return m_CanTakeDamage;
-    }
-
-    public int GetDeaths()
-    {
-        return m_Deaths;
     }
 
     public float GetCurrentHealth()
@@ -50,7 +45,7 @@ public class TankHealth : MonoBehaviour
     private void OnEnable()
     {
         m_CurrentHealth = m_StartingHealth;
-        m_Dead = false;
+        isDead = false;
 
         SetHealthUI();
     }
@@ -63,10 +58,11 @@ public class TankHealth : MonoBehaviour
             return;
 
         m_CurrentHealth -= amount;
+        m_Score.AddDamageTaken(amount);
 
         SetHealthUI();
 
-        if (m_CurrentHealth <= 0f && !m_Dead)
+        if (m_CurrentHealth <= 0f && !isDead)
         {
             OnDeath();
         }
@@ -85,8 +81,8 @@ public class TankHealth : MonoBehaviour
     private void OnDeath()
     {
         // Play the effects for the death of the tank and deactivate it.
-        m_Dead = true;
-        m_Deaths++;
+        isDead = true;
+        m_Score.AddDeath();
 
         m_ExplosionParticles.transform.position = transform.position;
         m_ExplosionParticles.gameObject.SetActive(true);

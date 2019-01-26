@@ -2,6 +2,7 @@
 
 public class ShellExplosion : MonoBehaviour
 {
+    public Score m_Score;
     public TankShooting m_TankShooting = null;
     public LayerMask m_TankMask;
     public ParticleSystem m_ExplosionParticles;       
@@ -40,9 +41,13 @@ public class ShellExplosion : MonoBehaviour
             float damage = CalculateDamage(targetRigidbody.position);
             targetHealth.TakeDamage(damage);
 
-            if (targetHealth.m_Dead && m_TankShooting != null && targetHealth.gameObject != m_TankShooting.gameObject)
+            if (targetHealth.m_Score != m_Score)
             {
-                m_TankShooting.m_Kills++;
+                m_Score.AddDamageDone(damage);
+                if (targetHealth.IsDead())
+                {
+                    m_Score.AddKill();
+                }
             }
         }
 

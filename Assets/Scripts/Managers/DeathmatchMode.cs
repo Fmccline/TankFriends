@@ -6,35 +6,29 @@ using UnityEngine;
 public class DeathmatchMode : MonoBehaviour, IGameMode {
 
     public float m_InvincibleDuration = 2.5f; // Default seconds to wait before tank can attack and take damage again
-    private int[] m_TankKills;
-    private int[] m_TankDeaths;
 
     public void StartRound(TankManager[] tanks)
     {
         foreach (var tank in tanks)
         {
-            tank.m_Score = 0;
             StartCoroutine(Respawn(tank));
-        }
-        for (int i = 0; i < tanks.Length; ++i)
-        {
-            m_TankDeaths[i] = 0;
-            m_TankKills[i] = 0;
         }
     }
 
     public TankManager GetRoundWinner(TankManager[] tanks)
     {
-        TankManager winner = tanks[0];
         bool draw = false;
-        for (int i = 1; i < tanks.Length; ++i)
-        {  
-            if (tanks[i].m_Score > winner.m_Score)
+        int mostKills = 0;
+        TankManager winner = null;
+        foreach (var tank in tanks)
+        {
+            Score score = tank.m_TankScore;
+            if (score.GetKills() > mostKills)
             {
-                winner = tanks[i];
                 draw = false;
+                winner = tank;
             }
-            else if (tanks[i].m_Score == winner.m_Score)
+            else if (score.GetKills() == mostKills)
             {
                 draw = true;
             }
@@ -44,53 +38,14 @@ public class DeathmatchMode : MonoBehaviour, IGameMode {
 
     public bool IsEndOfRound(TankManager[] tanks)
     {
-        SetScore(tanks);
-        EnableTanks(tanks);
+        RespawnTanks(tanks);
         return false;
     }
 
-    private void SetScore(TankManager[] tanks)
-    {
-        // Set kills and deaths if not correctly set yet
-        if (m_TankDeaths == null || m_TankKills == null || 
-            m_TankDeaths.Length != tanks.Length || m_TankKills.Length != tanks.Length)
-        {
-            m_TankKills = new int[tanks.Length];
-            m_TankDeaths = new int[tanks.Length];
-            for (int i = 0; i < tanks.Length; ++i)
-            {
-                m_TankKills[i] = tanks[i].M_Kills;
-                m_TankDeaths[i] = tanks[i].M_Deaths;
-            }
-        }
-        // Set scores
-        for (int i = 0; i < tanks.Length; ++i)
-        {
-            if (m_TankKills[i] < tanks[i].M_Kills)
-            {
-                tanks[i].m_Score += tanks[i].M_Kills - m_TankKills[i];
-                m_TankKills[i] = tanks[i].M_Kills;
-            }
-            if (m_TankDeaths[i] < tanks[i].M_Deaths)
-            {
-                tanks[i].m_Score -= tanks[i].M_Deaths - m_TankDeaths[i];
-                m_TankKills[i] = tanks[i].M_Kills;
-            }
-            if (tanks[i].m_Score < 0)
-                tanks[i].m_Score = 0;
-        }
-    }
-
-    private void EnableTanks(TankManager[] tanks)
+    private void RespawnTanks(TankManager[] tanks)
     {
         foreach (var tank in tanks)
         {
-            if (tank.M_Kills - tank.M_Deaths <= 0)
-            {
-                tank.M_Kills = 0;
-                tank.M_Deaths = 0;
-            }
-            //tank.m_Score = tank.M_Kills - tank.M_Deaths;
             if (tank.m_Instance.activeSelf == false)
             {
                 StartCoroutine(Respawn(tank));
@@ -109,5 +64,19 @@ public class DeathmatchMode : MonoBehaviour, IGameMode {
             tank.CycleInvincibleColor();
         }
         tank.DisableInvincible();
+    }
+
+    public List<float> GetRoundScores(TankManager[] tanks)
+    {
+        List<float> scores = new List<float>();
+        foreach (var tank in tanks)
+        {
+            Score tankScore = tank.m_TankScore;
+            int kills = tankScore.GetKills();
+            int deaths = tankScore.GetDeaths();
+            int score = kills - deaths;
+            scores.Add(score);
+        }
+        return scores;
     }
 }

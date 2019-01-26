@@ -13,8 +13,8 @@ public class TankShooting : MonoBehaviour
     public float m_MinLaunchForce = 15f;        // The force given to the shell if the fire button is not held.
     public float m_MaxLaunchForce = 30f;        // The force given to the shell if the fire button is held for the max charge time.
     public float m_MaxChargeTime = 0.75f;       // How long the shell can charge for before it is fired at max force.
-    public int m_Kills = 0;
     public ITankInput m_TankInput = new HumanTankInput();
+    public Score m_Score;
 
     public string m_FireButton;                // The input axis that is used for launching shells.
     private float m_CurrentLaunchForce;         // The force that will be given to the shell when the fire button is released.
@@ -23,10 +23,6 @@ public class TankShooting : MonoBehaviour
     private float m_MaxCooldownTime = 0.1f;
     private float m_CurrentCooldownTime = 0f;
 
-    public int GetKills()
-    {
-        return m_Kills;
-    }
 
     public float GetCurrentLaunchForce()
     {
@@ -107,7 +103,7 @@ public class TankShooting : MonoBehaviour
         Rigidbody shellInstance =
             Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
 
-        shellInstance.gameObject.GetComponent<ShellExplosion>().m_TankShooting = this;
+        shellInstance.gameObject.GetComponent<ShellExplosion>().m_Score = m_Score;
 
         // Set the shell's velocity to the launch force in the fire position's forward direction.
         shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;

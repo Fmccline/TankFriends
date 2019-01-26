@@ -12,11 +12,9 @@ public class TankManager
     [HideInInspector] public int m_PlayerNumber;             
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;
-    [HideInInspector] public int M_Kills { get { return m_Shooting.m_Kills; } set { m_Shooting.m_Kills = value; } }
-    [HideInInspector] public int M_Deaths { get { return m_Health.m_Deaths; } set { m_Health.m_Deaths = value; } }
-    [HideInInspector] public int m_Score = 0;
-    [HideInInspector] public int m_RoundScore = 0;
+    [HideInInspector] public TankInput.Type m_InputType;
 
+    public Score m_TankScore;
     private ITankInput m_TankInput;
     private TankMovement m_Movement;       
     private TankShooting m_Shooting;
@@ -25,15 +23,19 @@ public class TankManager
     private Color m_InvincibleColor = new Color(255f/255f, 255f/255f, 102f/255f);
     private Color m_CurrentColor;
 
-    public void Setup(TankInput.Type inputType)
+    public void Setup()
     {
         m_Movement = m_Instance.GetComponent<TankMovement>();
         m_Shooting = m_Instance.GetComponent<TankShooting>();
         m_Health = m_Instance.GetComponent<TankHealth>();
 
-        m_TankInput = TankInputFactory.MakeTankWithInput(inputType);
+        m_TankInput = TankInputFactory.MakeTankWithInput(m_InputType);
         m_Movement.m_TankInput = m_TankInput;
         m_Shooting.m_TankInput = m_TankInput;
+
+        m_TankScore = new Score(m_PlayerNumber);
+        m_Shooting.m_Score = m_TankScore;
+        m_Health.m_Score = m_TankScore;
 
         m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas>().gameObject;
 
@@ -114,6 +116,6 @@ public class TankManager
 
     public bool IsDead()
     {
-        return m_Health.m_Dead;
+        return m_Health.IsDead();
     }
 }
