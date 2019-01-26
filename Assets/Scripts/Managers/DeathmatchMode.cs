@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Enums;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,11 @@ using UnityEngine;
 public class DeathmatchMode : MonoBehaviour, IGameMode {
 
     public float m_InvincibleDuration = 2.5f; // Default seconds to wait before tank can attack and take damage again
+
+    public GameModes.Mode GetGameMode()
+    {
+        return GameModes.Mode.DeathMatch;
+    }
 
     public void StartRound(TankManager[] tanks)
     {

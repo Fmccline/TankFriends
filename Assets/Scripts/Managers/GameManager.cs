@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
 using Assets.Scripts.Factories;
+using Assets.Scripts.Enums;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -18,8 +20,7 @@ public class GameManager : MonoBehaviour
     public TankManagerSpawner m_TankManagerSpawner;
     public float m_MaxRoundTime = 300f;
     public IGameMode m_GameMode;
-    public enum GameMode { DeathMatch = 0, LastManStanding = 1 };
-    public GameMode m_GameModeType = GameMode.DeathMatch;
+    public GameModes.Mode m_GameModeType;
 
     private int m_RoundNumber;              
     private WaitForSeconds m_StartWait;     
@@ -44,27 +45,52 @@ public class GameManager : MonoBehaviour
         m_StartWait = new WaitForSeconds(m_StartDelay);
         m_EndWait = new WaitForSeconds(m_EndDelay);
 
-        switch (m_GameModeType)
+        m_GameMode = GetGameModeFromType();
+        m_Tanks = SpawnAllTanks();
+
+        SetCameraTargets();
+        PositionScoreText();
+
+        StartCoroutine(GameLoop());
+    }
+
+    private IGameMode GetGameModeFromType()
+    {
+        var gameModes = GetComponentsInChildren<IGameMode>();
+        foreach (var gameMode in gameModes)
         {
-            case GameMode.DeathMatch:
-                m_GameMode = GetComponentInChildren<DeathmatchMode>();
-                break;
-            default:
-                m_GameMode = GetComponentInChildren<LastManStandingMode>();
-                break;
+            if (gameMode.GetGameMode() == m_GameModeType)
+            {
+                return gameMode;
+            }
+        }
+        throw new ArgumentException("Invalid game mode type was encountered.");
+    }
+
+    private TankManager[] SpawnAllTanks()
+    {
+        return m_TankManagerSpawner.SpawnTankManagers(m_GameMode);
+    }
+
+    private void SetCameraTargets()
+    {
+        Transform[] targets = new Transform[m_Tanks.Length];
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            targets[i] = m_Tanks[i].m_Instance.transform;
         }
 
-        SpawnAllTanks();
-        SetCameraTargets();
+        m_CameraControl.m_Targets = targets;
+    }
 
+    private void PositionScoreText()
+    {
         float scale = 50f;
         var scorePosition = m_ScoreText.GetComponent<RectTransform>().position;
         m_ScoreText.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, m_Tanks.Length * scale);
         m_ScoreText.GetComponent<RectTransform>().position = new Vector3(scorePosition.x + 100f, scorePosition.y - m_Tanks.Length * scale / 2f, scorePosition.z);
-
-        StartCoroutine(GameLoop());
     }
-    
 
     public IEnumerator GameLoop()
     {
@@ -135,23 +161,6 @@ public class GameManager : MonoBehaviour
         m_MessageText.text = message;
 
         yield return m_EndWait;
-    }
-
-    private void SpawnAllTanks()
-    {
-        m_Tanks = m_TankManagerSpawner.SpawnTankManagers();
-    }
-
-    private void SetCameraTargets()
-    {
-        Transform[] targets = new Transform[m_Tanks.Length];
-
-        for (int i = 0; i < targets.Length; i++)
-        {
-            targets[i] = m_Tanks[i].m_Instance.transform;
-        }
-
-        m_CameraControl.m_Targets = targets;
     }
 
     private string GetTimeText()

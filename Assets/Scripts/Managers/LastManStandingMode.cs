@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Enums;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,11 @@ using UnityEngine;
 public class LastManStandingMode : MonoBehaviour, IGameMode
 {
     public float m_InvincibleDuration = 2.5f;
+
+    public GameModes.Mode GetGameMode()
+    {
+        return GameModes.Mode.LastManStanding;
+    }
 
     public void StartRound(TankManager[] tanks)
     {

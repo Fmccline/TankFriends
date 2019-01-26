@@ -13,7 +13,7 @@ namespace Assets.Scripts.Factories
         static Color[] COLORS = { Color.blue, Color.red, Color.green, Color.magenta,
                                   Color.cyan, Color.black, new Color(0.5f, 0.5f, 0.5f), new Color(155f / 255f, 76f / 255f, 0f) };
 
-        public TankManager[] SpawnTankManagers()
+        public TankManager[] SpawnTankManagers(IGameMode gameMode)
         {
             int totalPlayers = m_NumHumans + m_NumAI;
             int totalTanks = (totalPlayers > MAX_TANKS) ? MAX_TANKS : totalPlayers;
